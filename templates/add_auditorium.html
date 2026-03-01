@@ -1,0 +1,30 @@
+@app.route("/add-auditorium", methods=["GET", "POST"])
+def add_auditorium():
+    if request.method == "POST":
+        name = request.form['name']
+        location = request.form['location']
+        phone = request.form['phone']
+        price = request.form['price']
+        image_file = request.files['image']
+
+        # Secure image filename
+        filename = secure_filename(image_file.filename)
+
+        # Save image
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        image_file.save(image_path)
+
+        cursor = mysql.connection.cursor()
+        cursor.execute(
+            """
+            INSERT INTO auditoriums (name, location, phone, price, image)
+            VALUES (%s, %s, %s, %s, %s)
+            """,
+            (name, location, phone, price, filename)
+        )
+        mysql.connection.commit()
+        cursor.close()
+
+        return redirect("/auditoriums")
+
+    return render_template("add_auditorium.html")

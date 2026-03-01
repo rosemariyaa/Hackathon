@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2>Add Decoration (Admin)</h2>
+
+<form method="POST" enctype="multipart/form-data" class="mt-4">
+
+  <div class="mb-3">
+    <label class="form-label">Decoration Name</label>
+    <input type="text" name="name" class="form-control" required>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Price</label>
+    <input type="number" name="price" class="form-control" required>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Decoration Image</label>
+    <input type="file" name="image" class="form-control" accept="image/*" required>
+  </div>
+
+  <button type="submit" class="btn btn-success">
+    Add Decoration
+  </button>
+
+</form>
+
+{% endblock %}
