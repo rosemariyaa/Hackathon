@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Register</title>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+body{
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.card{
+    background:#fff;
+    width:380px;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 15px 30px rgba(0,0,0,0.2);
+}
+
+.card h2{
+    text-align:center;
+    margin-bottom:20px;
+    color:#333;
+}
+
+.input-group{
+    margin-bottom:15px;
+}
+
+.input-group label{
+    font-size:14px;
+    color:#555;
+}
+
+.input-group i{
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #777;
+    font-size: 16px;
+}
+
+.input-group input{
+    width:90%;
+    padding:10px 10px 10px 35px;
+    border:1px solid #ccc;
+    border-radius:6px;
+    outline:none;
+}
+
+.input-group small{
+    color:red;
+    display:none;
+}
+
+button{
+    width:100%;
+    background:#667eea;
+    color:white;
+    border:none;
+    padding:10px;
+    font-size:16px;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#5a67d8;
+}
+
+.login-link{
+    text-align:center;
+    margin-top:15px;
+}
+
+.login-link a{
+    color:#667eea;
+    text-decoration:none;
+    font-weight:600;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+<h2><i class="fa-solid fa-user-plus"></i> Register</h2>
+
+<form method="POST" onsubmit="return validateForm()">
+
+<div class="input-group">
+    <label>Name</label>
+    <i class="fa fa-user"></i>
+    <input type="text" name="name" id="name" placeholder="John">
+    <small id="nameError">Name must start with capital letter and contain only letters</small>
+</div>
+
+<div class="input-group">
+    <label>Email</label>
+    <i class="fa fa-envelope"></i>
+    <input type="email" name="email" id="email" placeholder="example@gmail.com">
+    <small id="emailError">Email must end with @gmail.com</small>
+</div>
+
+<div class="input-group">
+    <label>Password</label>
+    <i class="fa fa-lock"></i>
+    <input type="password" name="password" id="password">
+    <small id="passError">
+        Password must be 8+ chars with uppercase, lowercase, number & special char
+    </small>
+</div>
+
+<div class="input-group">
+    <label>Confirm Password</label>
+    <i class="fa fa-lock"></i>
+    <input type="password" name="confirm" id="confirm">
+    <small id="confirmError">Passwords do not match</small>
+</div>
+
+<button type="submit">Register</button>
+
+</form>
+
+<div class="login-link">
+Already registered?
+<a href="/login">Login here</a>
+</div>
+
+</div>
+
+<script>
+function validateForm(){
+
+let valid = true;
+
+/* NAME */
+let name = document.getElementById("name").value;
+let nameRegex = /^[A-Z][a-zA-Z]+$/;
+if(!nameRegex.test(name)){
+    document.getElementById("nameError").style.display="block";
+    valid=false;
+}else{
+    document.getElementById("nameError").style.display="none";
+}
+
+/* EMAIL */
+let email = document.getElementById("email").value;
+let emailRegex = /^[a-zA-Z][a-zA-Z0-9._]*@gmail\.com$/;
+if(!emailRegex.test(email)){
+    document.getElementById("emailError").style.display="block";
+    valid=false;
+}else{
+    document.getElementById("emailError").style.display="none";
+}
+
+/* PASSWORD */
+let pass = document.getElementById("password").value;
+let passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+if(!passRegex.test(pass)){
+    document.getElementById("passError").style.display="block";
+    valid=false;
+}else{
+    document.getElementById("passError").style.display="none";
+}
+
+/* CONFIRM PASSWORD */
+let confirm = document.getElementById("confirm").value;
+if(pass !== confirm){
+    document.getElementById("confirmError").style.display="block";
+    valid=false;
+}else{
+    document.getElementById("confirmError").style.display="none";
+}
+
+return valid;
+}
+</script>
+
+</body>
+</html>

@@ -1,15 +1,19 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, session, url_for
 from flask_mysqldb import MySQL
-from werkzeug.utils import secure_filename
-import os
 import config
+import os
+from werkzeug.utils import secure_filename
 
-# ✅ FIRST create Flask app
+# ---------------- Flask App ----------------
 app = Flask(__name__)
+app.secret_key = "event_secret_key"   # REQUIRED for sessions
 
-# ✅ THEN configure upload folder
+# ---------------- Upload configuration ----------------
 UPLOAD_FOLDER = "static/images"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
 
 # ---------------- MySQL configuration ----------------
 app.config['MYSQL_HOST'] = config.MYSQL_HOST
@@ -19,60 +23,93 @@ app.config['MYSQL_DB'] = config.MYSQL_DB
 
 mysql = MySQL(app)
 
-# ---------------- Home page ----------------
+# ---------------- Home ----------------
 @app.route("/")
 def home():
     return render_template("index.html")
+# ---------------- About Page ----------------
+@app.route("/about")
+def about():
+    """
+    Renders the About Us page with static content.
+    """
+    return render_template("about.html")
 
-# ---------------- Login page ----------------
+
+# ---------------- Contact Page ----------------
+@app.route("/contact")
+def contact():
+    """
+    Renders the Contact Us page with static contact details.
+    """
+    return render_template("contact.html")
+
+# ---------------- Login ----------------
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         email = request.form['email']
         password = request.form['password']
-        # validation / authentication later
+
+        cur = mysql.connection.cursor()
+        cur.execute(
+            "SELECT id, name FROM users WHERE email=%s AND password=%s",
+            (email, password)
+        )
+        user = cur.fetchone()
+        cur.close()
+
+        if user:
+            session['user_id'] = user[0]
+            session['user_name'] = user[1]
+
+            # redirect back if user was sent to login
+            return redirect(session.pop("next", "/auditoriums"))
+
+        return render_template("login.html", error="Invalid email or password")
+
     return render_template("login.html")
 
-# ---------------- Auditoriums page ----------------
+# ---------------- Register ----------------
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        name = request.form['name']
+        email = request.form['email']
+        password = request.form['password']
+        confirm = request.form['confirm']
+
+        if password != confirm:
+            return render_template("register.html", error="Passwords do not match")
+
+        cur = mysql.connection.cursor()
+        cur.execute(
+            "INSERT INTO users (name, email, password) VALUES (%s,%s,%s)",
+            (name, email, password)
+        )
+        mysql.connection.commit()
+        cur.close()
+
+        return redirect("/login")
+
+    return render_template("register.html")
+
+# ---------------- Logout ----------------
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/")
+
+# ---------------- Auditoriums ----------------
 @app.route("/auditoriums")
 def auditoriums():
-    cursor = mysql.connection.cursor()
-    cursor.execute("SELECT * FROM auditoriums")
-    data = cursor.fetchall()
-    cursor.close()
-
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM auditoriums")
+    data = cur.fetchall()
+    cur.close()
     return render_template("auditoriums.html", data=data)
 
-# ---------------- Catering page ----------------
-@app.route("/catering")
-def catering():
-    cursor = mysql.connection.cursor()
-    cursor.execute("SELECT * FROM catering")
-    data = cursor.fetchall()
-    cursor.close()
-
-    return render_template("catering.html", data=data)
-
-# ---------------- Decoration page ----------------
-@app.route("/decoration")
-def decoration():
-    cursor = mysql.connection.cursor()
-    cursor.execute("SELECT * FROM decoration")
-    data = cursor.fetchall()
-    cursor.close()
-
-    return render_template("decoration.html", data=data)
-
-# ---------------- Makeup page ----------------
-@app.route("/makeup")
-def makeup():
-    cursor = mysql.connection.cursor()
-    cursor.execute("SELECT * FROM makeup")
-    data = cursor.fetchall()
-    cursor.close()
-
-    return render_template("makeup.html", data=data)
-
+# ---------------- Add Auditorium ----------------
 @app.route("/add-auditorium", methods=["GET", "POST"])
 def add_auditorium():
     if request.method == "POST":
@@ -80,53 +117,75 @@ def add_auditorium():
         location = request.form['location']
         phone = request.form['phone']
         price = request.form['price']
-        image_file = request.files['image']
+        image = request.files['image']
 
-        # Secure image filename
-        filename = secure_filename(image_file.filename)
+        filename = secure_filename(image.filename)
+        image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-        # Save image to static/images
-        image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        image_file.save(image_path)
-
-        cursor = mysql.connection.cursor()
-        cursor.execute(
-            cursor.execute(
-    "INSERT INTO auditoriums (name, location, phone, price, image) VALUES (%s, %s, %s, %s, %s)",
-    (name, location, phone, price, filename)
-)
-            (name, location, price, filename)
+        cur = mysql.connection.cursor()
+        cur.execute(
+            """INSERT INTO auditoriums
+               (name, location, phone, price, image)
+               VALUES (%s,%s,%s,%s,%s)""",
+            (name, location, phone, price, filename)
         )
         mysql.connection.commit()
-        cursor.close()
+        cur.close()
 
         return redirect("/auditoriums")
 
     return render_template("add_auditorium.html")
+@app.route("/book/<int:aid>")
+def book(aid):
 
+    # user must be logged in
+    if "user_id" not in session:
+        session["next"] = url_for("book", aid=aid)
+        return redirect("/login")
+
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM auditoriums WHERE id=%s", (aid,))
+    auditorium = cur.fetchone()
+    cur.close()
+
+    return render_template("book.html", auditorium=auditorium)
 # ---------------- Add Decoration (Admin) ----------------
 @app.route("/add-decoration", methods=["GET", "POST"])
 def add_decoration():
+    # Optional: check if admin logged in
+    # if 'user_id' not in session:
+    #     return redirect('/login')
+
     if request.method == "POST":
-        name = request.form['name']
-        price = request.form['price']
-        image_file = request.files['image']
+        name = request.form["name"]
+        price = request.form["price"]
+        image = request.files["image"]
 
-        filename = secure_filename(image_file.filename)
-        image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        image_file.save(image_path)
+        filename = secure_filename(image.filename)
+        image.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
 
-        cursor = mysql.connection.cursor()
-        cursor.execute(
+        cur = mysql.connection.cursor()
+        cur.execute(
             "INSERT INTO decoration (name, price, image) VALUES (%s, %s, %s)",
             (name, price, filename)
         )
         mysql.connection.commit()
-        cursor.close()
+        cur.close()
 
         return redirect("/decoration")
 
     return render_template("add_decoration.html")
-# ---------------- Run app ----------------
+
+
+# ---------------- Display Decorations ----------------
+@app.route("/decoration")
+def decorations():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM decoration")
+    data = cur.fetchall()
+    cur.close()
+    return render_template("decoration.html", data=data)
+
+# ---------------- Run App ----------------
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True) 

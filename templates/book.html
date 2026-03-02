@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h2>Book Auditorium</h2>
+
+{% if auditorium %}
+  <h4>{{ auditorium[1] }}</h4>
+  <p>📍 {{ auditorium[2] }}</p>
+  <p>📞 {{ auditorium[3] }}</p>
+  <p>💰 ₹{{ auditorium[4] }}</p>
+
+  <button class="btn btn-success">Confirm Booking</button>
+{% else %}
+  <p>Auditorium not found</p>
+{% endif %}
+
+{% endblock %}

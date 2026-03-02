@@ -1,26 +1,114 @@
-{% extends "layout.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login</title>
 
-{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-<h2>Login</h2>
+<style>
+body{
+    font-family:'Segoe UI',sans-serif;
+    background:linear-gradient(135deg,#667eea,#764ba2);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+.card{
+    background:#fff;
+    width:380px;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 15px 30px rgba(0,0,0,0.2);
+}
+.card h2{
+    text-align:center;
+    margin-bottom:20px;
+}
+.input-group{
+    margin-bottom:15px;
+    position:relative;
+}
+.input-group i{
+    position:absolute;
+    left:12px;
+    top:50%;
+    transform:translateY(-50%);
+}
+.input-group input{
+    width:90%;
+    padding:10px 10px 10px 35px;
+}
+small{
+    color:red;
+    display:none;
+}
+button{
+    width:100%;
+    padding:10px;
+    background:#667eea;
+    border:none;
+    color:#fff;
+}
+</style>
+</head>
 
-<form method="POST">
+<body>
+<div class="card">
+<h2><i class="fa fa-right-to-bracket"></i> Login</h2>
 
-<input type="email" name="email"
-class="form-control mb-2"
-placeholder="Email">
+{% if error %}
+<p style="color:red;text-align:center;">{{ error }}</p>
+{% endif %}
 
-<input type="password"
-name="password"
-class="form-control mb-2"
-placeholder="Password">
+<form method="POST" onsubmit="return validateLogin()">
 
-<button class="btn btn-success">
+<div class="input-group">
+    <i class="fa fa-envelope"></i>
+    <input type="email" name="email" id="email" placeholder="example@gmail.com">
+    <small id="emailError">Invalid Gmail address</small>
+</div>
 
-Login
+<div class="input-group">
+    <i class="fa fa-lock"></i>
+    <input type="password" name="password" id="password" placeholder="Password">
+    <small id="passError">Invalid password format</small>
+</div>
 
-</button>
-
+<button type="submit">Login</button>
 </form>
 
-{% endblock %}
+<p style="text-align:center;margin-top:10px;">
+<a href="/register">Register</a>
+</p>
+</div>
+
+<script>
+function validateLogin(){
+    let valid=true;
+    let email=document.getElementById("email").value;
+    let pass=document.getElementById("password").value;
+
+    let emailRegex=/^[a-zA-Z][a-zA-Z0-9._]*@gmail\.com$/;
+    let passRegex=/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+
+    if(!emailRegex.test(email)){
+        document.getElementById("emailError").style.display="block";
+        valid=false;
+    }else{
+        document.getElementById("emailError").style.display="none";
+    }
+
+    if(!passRegex.test(pass)){
+        document.getElementById("passError").style.display="block";
+        valid=false;
+    }else{
+        document.getElementById("passError").style.display="none";
+    }
+
+    return valid;
+}
+</script>
+</body>
+</html>

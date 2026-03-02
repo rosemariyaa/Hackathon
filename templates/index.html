@@ -2,34 +2,85 @@
 
 {% block content %}
 
-<h2>Services</h2>
+<!-- Hero Section -->
+<section class="hero text-center py-5" style="background: linear-gradient(135deg,#667eea,#764ba2); color:white;">
+    <h1 class="display-4 mb-3">Divine Event Management</h1>
+    <p class="lead mb-0">“Making every moment magical and unforgettable”</p>
+</section>
 
-<div class="row">
+<!-- Services Section -->
+<section class="services py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Our Services</h2>
+        <div class="row justify-content-center g-4">
 
-  <div class="col-md-3">
-    <a href="/auditoriums" class="btn btn-primary w-100">
-      Auditoriums
-    </a>
-  </div>
+            <!-- Auditoriums -->
+            <div class="col-md-2 text-center">
+                <div class="service-card p-3 border rounded shadow-sm h-100 bg-white">
+                    <i class="fa fa-building fa-3x mb-3 text-primary"></i>
+                    <h5>Auditoriums</h5>
+                    <a href="/auditoriums" class="btn btn-primary btn-sm mt-2 w-100">Explore</a>
+                </div>
+            </div>
 
-  <div class="col-md-3">
-    <a href="/catering" class="btn btn-primary w-100">
-      Catering
-    </a>
-  </div>
+           
 
-  <div class="col-md-3">
-    <a href="/decoration" class="btn btn-primary w-100">
-      Decoration
-    </a>
-  </div>
+            <!-- Decoration -->
+            <div class="col-md-2 text-center">
+                <div class="service-card p-3 border rounded shadow-sm h-100 bg-white">
+                    <i class="fa fa-gift fa-3x mb-3 text-warning"></i>
+                    <h5>Decoration</h5>
+                    <a href="/decoration" class="btn btn-warning btn-sm mt-2 w-100">Explore</a>
+                </div>
+            </div>
 
-  <div class="col-md-3">
-    <a href="/makeup" class="btn btn-primary w-100">
-      Makeup
-    </a>
-  </div>
+           
 
-</div>
+            <!-- About Us -->
+            <div class="col-md-2 text-center">
+                <div class="service-card p-3 border rounded shadow-sm h-100 bg-light">
+                    <i class="fa fa-info-circle fa-3x mb-3 text-secondary"></i>
+                    <h5>About Us</h5>
+                    <a href="/about" class="btn btn-secondary btn-sm mt-2 w-100">Learn More</a>
+                </div>
+            </div>
+
+            <!-- Contact Us -->
+            <div class="col-md-2 text-center">
+                <div class="service-card p-3 border rounded shadow-sm h-100 bg-light">
+                    <i class="fa fa-envelope fa-3x mb-3 text-secondary"></i>
+                    <h5>Contact Us</h5>
+                    <a href="/contact" class="btn btn-secondary btn-sm mt-2 w-100">Get in Touch</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- Custom Styles -->
+<style>
+.hero {
+    background-image: url('/static/images/event-hero.jpg'); /* add your hero image */
+    background-size: cover;
+    background-position: center;
+    color: white;
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.5);
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+    box-shadow: 0 15px 25px rgba(0,0,0,0.2);
+}
+
+.service-card h5 {
+    font-weight: 600;
+}
+
+.services .btn {
+    font-weight: 500;
+}
+</style>
 
 {% endblock %}

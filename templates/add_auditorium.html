@@ -1,30 +1,42 @@
-@app.route("/add-auditorium", methods=["GET", "POST"])
-def add_auditorium():
-    if request.method == "POST":
-        name = request.form['name']
-        location = request.form['location']
-        phone = request.form['phone']
-        price = request.form['price']
-        image_file = request.files['image']
+{% extends "layout.html" %}
 
-        # Secure image filename
-        filename = secure_filename(image_file.filename)
+{% block content %}
 
-        # Save image
-        image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        image_file.save(image_path)
+<h2>Add Auditorium (Admin)</h2>
 
-        cursor = mysql.connection.cursor()
-        cursor.execute(
-            """
-            INSERT INTO auditoriums (name, location, phone, price, image)
-            VALUES (%s, %s, %s, %s, %s)
-            """,
-            (name, location, phone, price, filename)
-        )
-        mysql.connection.commit()
-        cursor.close()
+<form method="POST" enctype="multipart/form-data" class="mt-4">
 
-        return redirect("/auditoriums")
+  <div class="mb-3">
+    <label class="form-label">Auditorium Name</label>
+    <input type="text" name="name" class="form-control" required>
+  </div>
 
-    return render_template("add_auditorium.html")
+  <div class="mb-3">
+    <label class="form-label">Location</label>
+    <input type="text" name="location" class="form-control" required>
+  </div>
+
+  <!-- ✅ Phone Field Added -->
+  <div class="mb-3">
+    <label class="form-label">Phone Number</label>
+    <input type="text" name="phone" class="form-control"
+           maxlength="15" required>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Price</label>
+    <input type="number" name="price" class="form-control" required>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Image</label>
+    <input type="file" name="image" class="form-control" required>
+  </div>
+
+  <button type="submit" class="btn btn-success">
+    Add Auditorium
+  </button>
+
+</form>
+
+{% endblock %}

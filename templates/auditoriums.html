@@ -1,38 +1,35 @@
 {% extends "layout.html" %}
-
 {% block content %}
 
 <h2>Auditoriums</h2>
 
 <div class="row">
-
 {% for row in data %}
+  <div class="col-md-4">
+    <div class="card mb-4">
 
-<div class="col-md-4">
-  <div class="card mb-4">
+      {% if row[5] %}
+      <img src="{{ url_for('static', filename='images/' + row[5]) }}"
+           class="card-img-top">
+      {% endif %}
 
-    {% if row[5] %}
-<img src="{{ url_for('static', filename='images/' + row[5]) }}"
-     class="card-img-top"
-     alt="Auditorium Image">
-{% endif %}
+      <div class="card-body">
+        <h5 class="card-title">{{ row[1] }}</h5>
+        <p>
+          📍 {{ row[2] }}<br>
+          📞 {{ row[3] }}<br>
+          💰 ₹{{ row[4] }}
+        </p>
 
-    <div class="card-body">
-      <h5 class="card-title">{{ row[1] }}</h5>
-      <p class="card-text">
-        📍 Location: {{ row[2] }} <br>
-        📞 Phone: {{ row[3] }} <br>
-        💰 Price: ₹{{ row[4] }}
-      </p>
+        <a href="{{ url_for('book', aid=row[0]) }}"
+           class="btn btn-primary">
+           Book
+        </a>
+      </div>
 
-      <button class="btn btn-primary">Book</button>
     </div>
-
   </div>
-</div>
-
 {% endfor %}
-
 </div>
 
 {% endblock %}
