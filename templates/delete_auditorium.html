@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Delete Auditorium</h2>
+<p>Are you sure you want to delete this auditorium?</p>
+<ul>
+  <li><strong>ID:</strong> {{ auditorium[0] }}</li>
+  <li><strong>Name:</strong> {{ auditorium[1] }}</li>
+  <li><strong>Location:</strong> {{ auditorium[2] }}</li>
+  <li><strong>Phone:</strong> {{ auditorium[3] }}</li>
+  <li><strong>Price:</strong> {{ auditorium[4] }}</li>
+</ul>
+<form method="POST">
+  <button type="submit" class="btn btn-danger">Yes, Delete</button>
+  <a href="{{ url_for('admin_auditoriums') }}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

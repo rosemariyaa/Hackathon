@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Auditoriums</h2>
+    <!-- Add New Auditorium -->
+    <a href="{{ url_for('add_auditorium') }}" class="btn btn-primary mb-3">Add New</a>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Phone</th>
+                <th>Price</th>
+                <th>Image</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for aud in auditoriums %}
+            <tr>
+                <td>{{ aud[0] }}</td>
+                <td>{{ aud[1] }}</td>
+                <td>{{ aud[2] }}</td>
+                <td>{{ aud[3] }}</td>
+                <td>{{ aud[4] }}</td>
+                <td>
+                    {% if aud[5] %}
+                        <img src="{{ url_for('static', filename='images/' + aud[5]) }}" width="80">
+                    {% else %}
+                        No Image
+                    {% endif %}
+                </td>
+                <td>
+                    <!-- admin_auditoriums.html -->
+<a href="{{ url_for('edit_auditorium', aid=aud[0]) }}" class="btn btn-warning btn-sm">Edit</a>
+<a href="{{ url_for('delete_auditorium_admin', aid=aud[0]) }}" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

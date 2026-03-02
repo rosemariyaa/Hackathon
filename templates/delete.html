@@ -1,0 +1,19 @@
+# ---------------- Delete User ----------------
+@app.route("/admin/users/delete/<int:uid>", methods=["GET", "POST"])
+def delete_user(uid):
+    if "user_role" not in session or session["user_role"] != "admin":
+        return redirect("/login")
+
+    cur = mysql.connection.cursor()
+    # GET request: show confirmation page
+    if request.method == "GET":
+        cur.execute("SELECT id, name, email FROM users WHERE id=%s", (uid,))
+        user = cur.fetchone()
+        cur.close()
+        return render_template("delete.html", user=user)
+
+    # POST request: actually delete
+    cur.execute("DELETE FROM users WHERE id=%s", (uid,))
+    mysql.connection.commit()
+    cur.close()
+    return redirect(url_for("admin_users"))

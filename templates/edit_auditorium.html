@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Edit Auditorium</h2>
+<form method="POST" enctype="multipart/form-data" class="mt-4">
+  <div class="mb-3">
+    <label>Name</label>
+    <input type="text" name="name" value="{{ auditorium[1] }}" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label>Location</label>
+    <input type="text" name="location" value="{{ auditorium[2] }}" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label>Phone</label>
+    <input type="text" name="phone" value="{{ auditorium[3] }}" class="form-control" maxlength="15" required>
+  </div>
+  <div class="mb-3">
+    <label>Price</label>
+    <input type="number" name="price" value="{{ auditorium[4] }}" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label>Image (leave blank to keep current)</label>
+    <input type="file" name="image" class="form-control">
+  </div>
+  <button type="submit" class="btn btn-success">Save</button>
+  <a href="{{ url_for('admin_auditoriums') }}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}
